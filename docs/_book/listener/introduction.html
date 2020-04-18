@@ -129,19 +129,6 @@
             
         </li>
     
-        <li class="chapter " data-level="1.2.2" data-path="listener-object.html">
-            
-                <a href="listener-object.html">
-            
-                    
-                    Listener Object
-            
-                </a>
-            
-
-            
-        </li>
-    
 
             </ul>
             
@@ -193,10 +180,7 @@
                                 <section class="normal markdown-section">
                                 
                                 <h1 id="listener">Listener</h1>
-<p>A <em>listener</em> or a similar component must exist for a server program of any kind to collect data from network pipline. In this project, I set up a listener with some well-known Linux system call interface. The structure of the listening procedure is like this:</p>
-<p><img src="introduction.assets/image-20200418163423709.png" alt="image-20200418163423709"></p>
-<p>An epoll reactor continuously checks whether there is a new incoming packet from network pipeline. If there is a readable packet, forward it to the HTTP handler.</p>
-<h2 id="references">References</h2>
+<p>A <em>listener</em> or a similar component must exist for a server program of any kind. </p>
 
                                 
                                 </section>
@@ -240,7 +224,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Listener","level":"1.2","depth":1,"next":{"title":"Introduction","level":"1.2.1","depth":2,"path":"listener/introduction.md","ref":"listener/introduction.md","articles":[]},"previous":{"title":"Introduction","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"listener/introduction.md","mtime":"2020-04-18T08:39:20.157Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-04-18T10:03:51.501Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Listener","level":"1.2","depth":1,"next":{"title":"Introduction","level":"1.2.1","depth":2,"path":"listener/introduction.md","ref":"listener/introduction.md","articles":[]},"previous":{"title":"Introduction","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["livereload"],"pluginsConfig":{"livereload":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"listener/introduction.md","mtime":"2020-04-18T08:05:29.657Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-04-18T08:07:55.625Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
@@ -248,6 +232,10 @@
         
     <script src="../gitbook/gitbook.js"></script>
     <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-livereload/plugin.js"></script>
+        
     
         
         <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
