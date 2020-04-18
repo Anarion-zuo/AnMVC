@@ -1,5 +1,7 @@
 # Listener Object
 
+
+
 The code of the implementation of Listener is under `/src/listener/`. The directory currently has this structure:
 
 ```shell
@@ -9,7 +11,30 @@ listener
 └── TcpPortListener.cpp/.h
 ```
 
-If you look closely, the class `Listener` and `StreamListener` are empty. They are for future extensions, not implemented as yet. The real stuff is in the class `TcpPortListener`.
+If you look closely, the class `Listener` and `StreamListener` are empty. They are for future extensions, not implemented as yet. All real stuff are in the class `TcpPortListener`.
+
+{:toc}
+
+## Iterface Manual
+
+Before diving into the structure of codes and reasons for the design, I would first give the utility of each interface, how to configure a listener object for the use of a web server.
+
+### Constructor
+
+```cpp
+TcpPortListener(in_port_t portNum);
+```
+
+The constructor of the class `TcpPortListener`  has 1 argument, specifying the port that the listener should listen to. This specification can be altered with method `bind`.
+
+### Listen
+
+```cpp
+void listen();
+void launch();
+```
+
+This method set off the listening procedure on the current thread. The thread is then fully devoted to listening the predefined TCP port. To create a new thread for the execution of `listen`, call `launch`.
 
 ## Class Data Members
 
@@ -78,7 +103,11 @@ An epoll reactor generally needs 2 components, a file descriptor and an array of
 // init epoll
 epfd = ::epoll_create(backlog);  // allocate a file descriptor
 events = static_cast<epoll_event *>( operator new( backlog * sizeof(epoll_event) ) );  // allocate space for events
-memset(events, 0, backlog * sizeof(epoll_event));
+memset(events, 0, backlog * sizeof(epoll_event));  // zero the array
 addEvent(epfd, server.getFd(), EPOLLIN | EPOLLET);  // put server socket onto the epoll tree
 ```
+
+Later when the programm make use of `epoll`, it must read the array `events`.
+
+Function `addEvent` is to register the server socket onto the  service of`epoll`. If an event of interest accured on the socket, such as in-coming connection, in-coming packet, or error, the information of the event would be put onto the `events` array.
 
