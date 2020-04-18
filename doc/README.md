@@ -20,4 +20,4 @@ brew install cmake        # Mac OS X
 
 ### Dependencies
 
-The project is not built with the `C++ std`, but with another project of my own [AnBase](https://github.com/Anarion-zuo/AnBase), providing basic components. There are some symbolic links under the directory `library` and ``
+The project is not built with the `C++ std`, but with another project of my own [AnBase](https://github.com/Anarion-zuo/AnBase), providing basic components. There are some symbolic links under the directory `library` and `include`
