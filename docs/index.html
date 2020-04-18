@@ -150,11 +150,64 @@
 <p>I am working on Ubuntu Linux <code>gcc</code>, therefore I recommend you to do the same. Do not presume to use Windows, for it is 100% incompatible with Linux system call. If you are using other versions of Linux, such as Centos, there may be some tiny issues when compiling. You must alter some of the code, adding some header files, to make it work. Clang is not recommended. You must also be ware of the <code>gcc</code> under MacOSX, for it is actually <code>clang</code> by default.</p>
 <h3 id="build-tool">Build Tool</h3>
 <p>I am using CMake as build tool, while you may prefer <em>make</em>. They are quite alike! To build the project, you must first install it.</p>
-<pre><code>sudo apt install cmake    # Ubuntu
-sudo yum install cmake    # Centos
-brew install cmake        # Mac OS X
-</code></pre><h3 id="dependencies">Dependencies</h3>
-<p>The project is not built with the <code>C++ std</code>, but with another project of my own <a href="https://github.com/Anarion-zuo/AnBase" target="_blank">AnBase</a>, providing basic components. There are some symbolic links under the directory <code>library</code> and <code>include</code></p>
+<pre><code class="lang-sh">sudo apt install cmake    <span class="hljs-comment"># Ubuntu</span>
+sudo yum install cmake    <span class="hljs-comment"># Centos</span>
+</code></pre>
+<h3 id="dependencies">Dependencies</h3>
+<p>This project makes use of the <code>zlib</code> library for compressing files. Please install <code>zlib</code> on your machine before building the project.</p>
+<pre><code class="lang-shell">sudo apt install zlib1g-dev
+sudo yum install zlib
+</code></pre>
+<p>The project is not built with the <code>C++ std</code>, but with another project of my own <a href="https://github.com/Anarion-zuo/AnBase" target="_blank">AnBase</a>, providing basic components. There are some links under the directory <code>library</code> and <code>include</code>. The symbolic links under <code>include</code> are from my other repository <a href="https://github.com/Anarion-zuo/AnBase" target="_blank">AnBase</a>. To include them here, you must do the following things.</p>
+<ol>
+<li>Clone that repository.</li>
+<li>Copy or link all directories under its <code>include</code>.</li>
+</ol>
+<p>All directories under the <code>include</code> directory should be duplicated(copied or linked) to the current <a href="../../include">include</a>. The directory structure should look like the following.</p>
+<p><code>include</code>:</p>
+<pre><code class="lang-shell">include
+&#x251C;&#x2500;&#x2500; allocator
+&#x251C;&#x2500;&#x2500; concurrent
+&#x251C;&#x2500;&#x2500; container
+&#x251C;&#x2500;&#x2500; context
+&#x251C;&#x2500;&#x2500; exceptions
+&#x251C;&#x2500;&#x2500; feature
+&#x251C;&#x2500;&#x2500; http
+&#x251C;&#x2500;&#x2500; io
+&#x251C;&#x2500;&#x2500; listener
+&#x251C;&#x2500;&#x2500; Object
+&#x251C;&#x2500;&#x2500; parser
+&#x251C;&#x2500;&#x2500; reflection
+&#x2514;&#x2500;&#x2500; resource
+</code></pre>
+<p><code>lib</code>:</p>
+<pre><code class="lang-shell">lib
+&#x2514;&#x2500;&#x2500; libanarionbase.a
+</code></pre>
+<p>All is ready then.</p>
+<h3 id="compile">Compile</h3>
+<p>The files are ready. Use CMake to build the project. If you are new to CMake, please follow my steps.</p>
+<p>First, set up a directory for the compile results.</p>
+<pre><code class="lang-shell">mkdir build
+</code></pre>
+<p>Go into that directory.</p>
+<pre><code class="lang-shell">cd build
+</code></pre>
+<p>Run CMake to generate MakeFiles and more.</p>
+<pre><code class="lang-shell">cmake ..
+</code></pre>
+<p>Run make to generate the executable file.</p>
+<pre><code class="lang-shell">make
+</code></pre>
+<p>You may have to do some tiny alternations due to different version of Linux. If you are using Ubuntu, there should be no problem.</p>
+<p>If everything is fine, you may find an executable file <code>MyMVC</code> under the <code>build</code> directory.</p>
+<h3 id="run-you-server">Run You Server</h3>
+<p>Run the executable file, setting up an HTTP server on port 9898. You may request the page with <em>Postman</em> or some Web Browser. The page is a modest one, holding few code for testing only. The <code>html</code> file is <code>/static/html/hello.html</code>. You may edit it to get a different result. </p>
+<p>It should show this as default:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&quot;color: blue&quot;</span>&gt;</span>I am your FATHER<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+</code></pre>
+<h1 style="color: blue" id="i-am-your-father">I am your FATHER</h1>
+
 
                                 
                                 </section>
@@ -190,7 +243,7 @@ brew install cmake        # Mac OS X
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Introduction","level":"1.1","depth":1,"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"README.md","mtime":"2020-04-18T07:23:52.906Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-04-18T07:24:02.275Z"},"basePath":".","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Introduction","level":"1.1","depth":1,"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"README.md","mtime":"2020-04-18T07:35:09.254Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-04-18T07:35:17.215Z"},"basePath":".","book":{"language":""}});
         });
     </script>
 </div>
