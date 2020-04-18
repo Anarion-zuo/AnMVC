@@ -1,6 +1,6 @@
 # Listener Object
 
-{:toc}
+
 
 The code of the implementation of Listener is under `/src/listener/`. The directory currently has this structure:
 
@@ -12,6 +12,8 @@ listener
 ```
 
 If you look closely, the class `Listener` and `StreamListener` are empty. They are for future extensions, not implemented as yet. All real stuff are in the class `TcpPortListener`.
+
+{:toc}
 
 ## Iterface Manual
 
