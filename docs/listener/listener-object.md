@@ -1,5 +1,7 @@
 # Listener Object
 
+{:toc}
+
 The code of the implementation of Listener is under `/src/listener/`. The directory currently has this structure:
 
 ```shell
