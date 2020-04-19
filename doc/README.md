@@ -2,7 +2,9 @@
 
 *AnMVC* is a naive MVC framework in C++. Like other MVC framework, it helps create a website in C++ with as fewer extra code as possible. I started this project for the purpose of demos and practices. Now that I have implemented some of the basic utility of an MVC framework, I am publishing it with my explanations to its details.
 
-{:toc}
+A more detailed manual is at [AnMVC](https://anarion-zuo.github.io/AnMVC/).
+
+The manual and the project is far from complete! 
 
 ## Hello World
 
@@ -107,4 +109,8 @@ It should show this as default:
 ```
 
 <h1 style="color: blue">I am your FATHER</h1>
+
+If you fail to get the result, feel free to raise an issue.
+
+## Build a Web Application
 
