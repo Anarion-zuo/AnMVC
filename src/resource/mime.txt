@@ -1,0 +1,12 @@
+Abbreviation	File format	MIME type	File extension(s)	Browser compatibility
+APNG	Animated Portable Network Graphics	image/apng	.apng	Chrome, Edge, Firefox, Opera, Safari
+BMP	Bitmap file	image/bmp	.bmp	Chrome, Edge, Firefox, Internet Explorer, Opera, Safari
+GIF	Graphics Interchange Format	image/gif	.gif	Chrome, Edge, Firefox, Internet Explorer, Opera, Safari
+ICO	Microsoft Icon	image/x-icon	.ico, .cur	Chrome, Edge, Firefox, Internet Explorer, Opera, Safari
+JPEG	Joint Photographic Expert Group image	image/jpeg	.jpg, .jpeg, .jfif, .pjpeg, .pjp	Chrome, Edge, Firefox, Internet Explorer, Opera, Safari
+PNG	Portable Network Graphics	image/png	.png	Chrome, Edge, Firefox, Internet Explorer, Opera, Safari
+SVG	Scalable Vector Graphics	image/svg+xml	.svg	Chrome, Edge, Firefox, Internet Explorer, Opera, Safari
+TIFF	Tagged Image File Format	image/tiff	.tif, .tiff	None built-in; add-ons required
+WebP	Web Picture format	image/webp	.webp	Chrome, Edge, Firefox, Opera
+
+SString("apng"), SString("bmp"), SString("gif"), SString("ico"), SString("cur"), SString("jpg"), SString("jpeg"), SString("jfif"), SString("pjpeg"), SString("pjp"), SString("png"), SString("svg"), SString("tiff"), SString("tif"), SString("webp"),

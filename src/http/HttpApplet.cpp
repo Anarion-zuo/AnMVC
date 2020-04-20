@@ -50,3 +50,11 @@ void anarion::HttpApplet::process() {
 
 //    response->send()
 }
+
+anarion::TextPayload anarion::HttpApplet::page400Text(SString("Resource not found"));
+
+void anarion::HttpApplet::set400Page(int status) {
+    response->setStatus(status);
+//    staticResources.getPayload(SString("40x.html"));
+    response->setPayload(&page400Text);
+}

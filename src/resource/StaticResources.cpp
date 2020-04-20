@@ -7,7 +7,7 @@
 anarion::SString anarion::StaticResources::htmlString("html"), anarion::StaticResources::cssString("css"), anarion::StaticResources::jsString("js"), anarion::StaticResources::imgString("img");
 
 anarion::HashSet<anarion::SString> anarion::StaticResources::imageFormatSet {
-        SString("png"), SString("jpg"), SString("jpeg"), SString("png")
+        SString("apng"), SString("bmp"), SString("gif"), SString("ico"), SString("cur"), SString("jpg"), SString("jpeg"), SString("jfif"), SString("pjpeg"), SString("pjp"), SString("png"), SString("svg"), SString("tiff"), SString("tif"), SString("webp")
 };
 
 anarion::StaticResources::StaticResources(anarion::SString &&dir) : directory(forward<SString>(dir)) {

@@ -4,7 +4,7 @@ This section shows you how to build an application with `AnMVC` without understa
 
 ## Derive from `HttpApplet`
 
-An `HttpApplet` is a building-block of a web application. You must begin with implementing this interface. Build a class deriving from `HttpApplet`:
+An `HttpApplet` is a building-block of a web application. You must begin with implementing this interface. Build a class derived from `HttpApplet`:
 
 ```cpp
 class HelloApplet : public virtual HttpApplet {
@@ -14,7 +14,7 @@ class HelloApplet : public virtual HttpApplet {
 
 ## Request Pattern
 
-An `applet` must be appointed a way of access, a request pattern, which map and distributes requests to many applets. Edit `HttpDispatcher::registerApplets()` in file `/src/http/HttpDispatcher.cpp` to specify a pattern for your applet.
+An `applet` must be appointed a way of access, a request pattern, which maps and distributes requests to many applets. Edit `HttpDispatcher::registerApplets()` in file `/src/http/HttpDispatcher.cpp` to specify a pattern for your applet.
 
 ```cpp
 void HttpDispatcher::registerApplets() {
@@ -70,5 +70,5 @@ The string passed to the function `staticResources.getPayload` is a relative dir
 
 ## Try Your Server
 
-The server should be ready by now. Run it and try it with a browser of *Postman*. If you have any problem, feel free to raise an issue.
+The server should be ready by now. Run it and try it with a browser or *Postman*. If you have any problem, feel free to raise an issue.
 

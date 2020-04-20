@@ -7,6 +7,7 @@
 
 #include <concurrent/container/Queue/BlockQueue.hpp>
 #include <resource/StaticResources.h>
+#include <resource/TextPayload.h>
 #include "Request.h"
 #include "Response.h"
 
@@ -53,6 +54,10 @@ namespace anarion {
         virtual void onUnknown() {};
 
         static StaticResources staticResources;
+
+        // error pages
+        static TextPayload page400Text;
+        void set400Page(int status);
 
     public:
 

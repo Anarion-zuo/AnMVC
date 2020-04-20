@@ -11,33 +11,31 @@ using namespace anarion;
 void anarion::HttpDispatcher::process() {
     // obtain channel
     TcpSocketChannel *tcpChannel = listener->pollQueue();
-    HttpChannel *httpChannel;
-    httpChannel = new HttpChannel(move(*tcpChannel));
-    tcpChannel->invalidi();
-    tcpChannel->invalido();
-    delete tcpChannel;
+//    HttpChannel *httpChannel;
+//    httpChannel = new HttpChannel(move(*tcpChannel));
+//    tcpChannel->invalidi();
+//    tcpChannel->invalido();
+//    delete tcpChannel;
 
     // read and parse data
-    Buffer channelData = httpChannel->out();
+    Buffer channelData = tcpChannel->out();
     if (channelData.empty()) {
         // TODO connection closed
-        returnConnection(httpChannel, nullptr);
+        returnHttpConnection(tcpChannel, nullptr);
         // no cleanup required
         return;
     }
     Request * request = Request::parse(channelData);
-    httpChannel->loadRequest(request);
+//    tcpChannel->loadRequest(request);
 
     // map to applet
     SString &requestDir = request->getDir();
     HttpApplet *applet = getMappedApp(requestDir);
     if (applet == nullptr) {
-        // TODO no request mapping exists
-        Response notFoundResponse (404);
-        notFoundResponse.send(*httpChannel);
-        returnConnection(httpChannel, request);
+        // try static applet
+        // if not working, return error
+        applet = staticHandler;
         // no cleanup required
-        return;
     }
 
     // run applet process
@@ -46,9 +44,9 @@ void anarion::HttpDispatcher::process() {
     instance->process();
 
     // send back response
-    instance->getResponse()->send(*httpChannel);
+    instance->getResponse()->send(*tcpChannel);
 
-    returnConnection(httpChannel, request);
+    returnHttpConnection(tcpChannel, request);
     cleanUpSession(instance->getResponse(), instance);
 }
 
@@ -64,7 +62,7 @@ void HttpDispatcher::registerApplets() {
     requestMap.put(SString("/"), new HelloApplet());
 }
 
-void HttpDispatcher::returnConnection(HttpChannel *httpChannel, Request *request) {
+void HttpDispatcher::returnHttpConnection(TcpSocketChannel *tcpChannel, Request *request) {
     // connection control on keep-alive
     size_type timeOut;
     if (request) {
@@ -75,22 +73,23 @@ void HttpDispatcher::returnConnection(HttpChannel *httpChannel, Request *request
     if (timeOut == 0) {
         // check if channel is registered
         fdMapLock.lock();
-        auto it = fd2TimeOut.find(httpChannel->getFd());
+        auto it = fd2TimeOut.find(tcpChannel->getFd());
         if (it != fd2TimeOut.end_iterator()) {
             fd2TimeOut.remove(*it);
         }
         fdMapLock.unlock();
         // connection already closed
-        delete httpChannel;
+        delete tcpChannel;
+        delete request;
         return;
     }
     // put into the set
     fdMapLock.lock();
-    fd2TimeOut.put(httpChannel->getFd(), {timeOut, time(nullptr)});
+    fd2TimeOut.put(tcpChannel->getFd(), {timeOut, time(nullptr)});
     fdMapLock.unlock();
-    httpChannel->invalidi();
-    httpChannel->invalido();
-    delete httpChannel;
+    tcpChannel->invalidi();
+    tcpChannel->invalido();
+    delete tcpChannel;
     delete request;
 }
 

@@ -25,11 +25,14 @@ namespace anarion {
         };
 
     protected:
-        TcpServerSocketChannel server;
+        TcpServerSocketChannel server;   // server socket
+
+        // epoll
         int epfd;
         epoll_event *events = nullptr;
         LaunchRoutine routine;
 
+        // ready queue
         BlockQueue<TcpSocketChannel*> readQueue;
     public:
         explicit TcpPortListener(in_port_t portNum) : server(portNum), routine(nullptr) {

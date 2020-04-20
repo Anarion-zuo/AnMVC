@@ -10,12 +10,22 @@ anarion::HashMap<anarion::SString, anarion::SString> anarion::FilePayload::suffi
     {SString("html"), SString("text/html")},
     {SString("css"), SString("text/css")},
     {SString("js"), SString("text/javascript")},
-    {SString("js"), SString("text/javascript")},
 
+    // images
+    {SString("apng"), SString("image/apng")},
+    {SString("bmp"), SString("image/bmp")},
     {SString("gif"), SString("image/gif")},
+    {SString("ico"), SString("image/x-icon")},
+    {SString("cur"), SString("image/x-icon")},
     {SString("jpg"), SString("image/jpeg")},
     {SString("jpeg"), SString("image/jpeg")},
+    {SString("jfif"), SString("image/jpeg")},
+    {SString("pjpeg"), SString("image/jpeg")},
+    {SString("pjp"), SString("image/jpeg")},
     {SString("png"), SString("image/png")},
+    {SString("svg"), SString("image/svg+xml")},
+    {SString("tiff"), SString("image/tiff")},
+    {SString("tif"), SString("image/tiff")},
     {SString("webp"), SString("image/webp")},
 });
 
@@ -36,6 +46,7 @@ void anarion::FilePayload::load() {
         operator delete (fileCache, fileLength);
     }
     fileCache = static_cast<char *>(operator new(len));
+//    printf("%d %d %d\n", fileChannel->valid(), fileChannel->i_valid);
     fileChannel->rewind();
     fileChannel->out(fileCache, len);
     fileLength = len;

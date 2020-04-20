@@ -30,14 +30,14 @@ static void delEvent(int epfd, int fd, int state) {
 
 void anarion::TcpPortListener::listen() {
     int backlog = 128;
+    // init epoll
+    epfd = ::epoll_create(backlog);  // allocate a file descriptor
+    events = static_cast<epoll_event *>( operator new( backlog * sizeof(epoll_event) ) );  // allocate space for events
+    memset(events, 0, backlog * sizeof(epoll_event));
+    addEvent(epfd, server.getFd(), EPOLLIN | EPOLLET);  // put server socket onto the epoll tree
+    int ret, fd, lfd = server.getFd();
     // initiate listen
     server.listen(backlog);
-    // init epoll
-    epfd = ::epoll_create(backlog);
-    events = static_cast<epoll_event *>( operator new( backlog * sizeof(epoll_event) ) );
-    memset(events, 0, backlog * sizeof(epoll_event));
-    addEvent(epfd, server.getFd(), EPOLLIN | EPOLLET);
-    int ret, fd, lfd = server.getFd();
     // roll
     while (true) {
         ret = epoll_wait(epfd, events, backlog, 0);   // non block

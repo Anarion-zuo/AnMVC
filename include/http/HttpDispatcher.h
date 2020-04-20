@@ -10,6 +10,7 @@
 #include <container/SString.h>
 #include "HttpApplet.h"
 #include "HttpChannel.h"
+#include "StaticHandler.h"
 /*
  * The dispatcher collects connections (Channel) from specified listener (listener) and forwards them to registered HttpApplet instances.
  * The listener is pre-specified at construct time.
@@ -24,9 +25,12 @@ namespace anarion {
         TcpPortListener *listener;
         HashMap<SString, HttpApplet*> requestMap;
 
+        // static resources
+        StaticHandler *staticHandler = new StaticHandler;
+
         HttpApplet *getMappedApp(const SString &dir);
         void registerApplets();
-        void returnConnection(HttpChannel *httpChannel, Request *request);
+        void returnHttpConnection(TcpSocketChannel *tcpChannel, Request *request);
         void cleanUpSession(Response *response, HttpApplet *applet);
 
         struct CleanThread : public Thread {
