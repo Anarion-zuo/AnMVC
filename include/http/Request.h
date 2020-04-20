@@ -15,7 +15,9 @@ namespace anarion {
 
     enum RequestMethod { REQUEST_GET, REQUEST_POST, REQUEST_PUT, REQUEST_DELETE, REQUEST_HEAD, REQUEST_CONNECT, REQUEST_OPTIONS, REQUEST_TRACE, REQUEST_PATCH, REQUEST_UNSUPPORTED};
 
+    class HttpDispatcher;
     class Request {
+        friend class HttpDispatcher;
         friend Request *parseRequest(char *data, size_type length, size_type *totalHeaderLength);
     protected:
 
@@ -24,6 +26,13 @@ namespace anarion {
         SString dir;
         HashMap<SString, SString> headers, params;
         Buffer data{ 1024 };
+
+        /*
+         * Server parameters
+         * for the applet to hack down into Connection details
+         */
+        HttpDispatcher *dispatcher = nullptr;
+        TcpSocketChannel *tcpChannel = nullptr;
 
         /*
          * Request Methods
@@ -64,6 +73,7 @@ namespace anarion {
         bool keepAlive = false;  // default false, change if otherwise
         size_type keepAliveTimeOut = 0;
         size_type keepAliveMax = 0;
+        static size_type keepAliveDefaultSeconds;
         void parseHeaderKeepAlive();
 
     public:
@@ -78,6 +88,8 @@ namespace anarion {
         constexpr Buffer &getData() { return data; }
         constexpr SString &getDir() { return dir; }
         constexpr RequestMethod getMethod() const { return method; }
+        constexpr HttpDispatcher *getDispatcher() const { return dispatcher; }
+        constexpr TcpSocketChannel *getSocket() const { return tcpChannel; }
 
         /*
          * Features in http

@@ -61,6 +61,8 @@ namespace anarion {
          * Call repeatedly, each time processing a single connection from listener.
          */
         void process();
+
+        void throwErrorStatus(int status, TcpSocketChannel &tcpChannel);
     };
 }
 

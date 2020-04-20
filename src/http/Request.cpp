@@ -25,7 +25,11 @@ namespace anarion {
     };
 
     static ListParser *spaceSeparatedParser = new ListParser(' ');
+    static MapParser *paramMapParser = new MapParser('=', '&');
 
+    /*
+     * Parse the literal part of the request
+     */
     Request *parseRequest(char *data, size_type length, size_type *totalHeaderLength) {
         if (data == nullptr || length == 0) {
             return nullptr;
@@ -52,36 +56,55 @@ namespace anarion {
         auto firstLineIt = firstLineVars.begin_iterator();
         request->method = Request::string2type(*firstLineIt);
         ++firstLineIt;
-        request->dir = move(*firstLineIt);
+        SString dirparam = move(*firstLineIt);
+//        request->dir = move(*firstLineIt);
         ++firstLineIt;
         // http version
+
+        /*
+         * Request directory&params
+         */
+        {
+            const char *dir_str = dirparam.getArr();
+            size_type dir_len = dirparam.length();
+
+            // find ?
+            size_type quOffset = indexOf(dir_str, dir_len, '?');
+            request->dir = SString(const_cast<char*>(dir_str), quOffset);
+            if (quOffset != dir_len) {
+                request->params = paramMapParser->parse(dir_str + quOffset + 1, quOffset + 1);
+            }
+        }
 
         /*
          * Headers
          * 1) change all \n to space
          * 2) apply map parser
          */
-        leftIndex = rOffset + 2;
-        size_type headersBeginIndex = leftIndex, headersEndIndex;
-        // change all \n to space
-        while (true) {
-            rOffset = indexOf(data + leftIndex, length - leftIndex, '\r') + leftIndex;
-            if (rOffset == length) {
-                throw HttpRequestTextSyntaxError();
+        {
+            leftIndex = rOffset + 2;
+            size_type headersBeginIndex = leftIndex, headersEndIndex;
+            // change all \n to space
+            while (true) {
+                rOffset = indexOf(data + leftIndex, length - leftIndex, '\r') + leftIndex;
+                if (rOffset == length) {
+                    throw HttpRequestTextSyntaxError();
+                }
+                if (data[rOffset + 1] != '\n') {
+                    throw HttpRequestTextSyntaxError();
+                }
+                if (rOffset == leftIndex) {
+                    headersEndIndex = leftIndex - 2;  // the last non-empty \r
+                    leftIndex = rOffset + 2;
+                    break;
+                }
+                leftIndex = rOffset + 1;
+                data[leftIndex] = ' ';
+                ++leftIndex;
             }
-            if (data[rOffset + 1] != '\n') {
-                throw HttpRequestTextSyntaxError();
-            }
-            if (rOffset == leftIndex) {
-                headersEndIndex = leftIndex - 2;  // the last non-empty \r
-                leftIndex = rOffset + 2;
-                break;
-            }
-            leftIndex = rOffset + 1;
-            data[leftIndex] = ' ';
-            ++leftIndex;
+            request->headers = MapParser(':', '\r').parse(data + headersBeginIndex,
+                                                          headersEndIndex - headersBeginIndex);
         }
-        request->headers = MapParser(':', '\r').parse(data + headersBeginIndex, headersEndIndex - headersBeginIndex);
         *totalHeaderLength = leftIndex;
         return request;
     }
@@ -90,69 +113,28 @@ namespace anarion {
 
 anarion::Request * anarion::Request::parse(anarion::Buffer &data) {
     /*
-    Request *p = new Request;
-    Request &request = *p;
-
-    data.rewind();   // reset read
-
-    // request type
-    Buffer buffer = data.write_arr_to(' ');
-    char *pc = buffer.getArr();
-    request.method = string2type(pc, buffer.size());
-
-    // directory
-    data.skip(" ");
-    buffer = data.write_arr_to(' ');
-    request.dir = SString::move(buffer.write_arr_to('?'));
-    buffer.skip("?");
-    data.skip();  // ' '
-
-    // params
-    while (true) {
-        Buffer key = buffer.write_arr_to('=');
-        if (key.empty()) { break; }
-        buffer.skip();  // '='
-        Buffer val = buffer.write_arr_to('&');
-        buffer.skip();
-        request.params.put(SString::move(move(key)), SString::move(move(val)));
-    }
-
-    // version
-    data.write_arr_to('\r');
-    data.skip("\r\n");
-
-    // headers
-    while (true) {
-        if (data.index_of('\r') == 0) { break; }
-        Buffer line = data.write_arr_to('\r');
-        Buffer key = line.write_arr_to(':');
-        line.skip(": ");
-        Buffer val = line.write_arr_to('\r');
-        data.skip();  // '\r'
-        data.skip();  // '\n'
-        request.headers.put(SString::move(move(key)), SString::move(move(val)));
-    }
-    data.skip("\r\n");
-
-    request.data = move(data);
-
-    // special attributes
-
-    request.parseHeaderConnection();
-    request.parseHeaderKeepAlive();
-
-    return p;
+     * Literal part
      */
-    data.rewind();
-    size_type length = data.unread(), totalHeaderLength;
-    char *c_data = static_cast<char *>(operator new(length));
-    data.write_arr(c_data, length);
-    Request *request = parseRequest(c_data, length, &totalHeaderLength);
-    operator delete(c_data, length);
-    if (request == nullptr) {
-        throw HttpRequestTextSyntaxError();
+    Request *request = nullptr;
+    {
+        data.rewind();
+        size_type length = data.unread(), totalHeaderLength;
+        char *c_data = static_cast<char *>(operator new(length));
+        data.write_arr(c_data, length);
+        request = parseRequest(c_data, length, &totalHeaderLength);
+        operator delete(c_data, length);
+        if (request == nullptr) {
+            throw HttpRequestTextSyntaxError();
+        }
+        data.setWriteIndex(totalHeaderLength);
     }
-    data.setWriteIndex(totalHeaderLength);
+    /*
+     * Connection
+     */
+    {
+        request->parseHeaderConnection();
+        request->parseHeaderKeepAlive();
+    }
     return request;
 }
 
@@ -213,22 +195,28 @@ void anarion::Request::parseHeaderConnection() {
 anarion::SString anarion::Request::KeepAliveStr("keep-alive"), anarion::Request::TimeOutStr("timeout"), anarion::Request::MaxStr("max");
 anarion::MapParser * anarion::Request::keepAliveParser = new MapParser('=', ';');
 
+anarion::size_type anarion::Request::keepAliveDefaultSeconds = 1000;
+
 void anarion::Request::parseHeaderKeepAlive() {
     if (connectionHeader == ConnectionKeepAlive) {
         auto it = headers.find(SString("Keep-Alive"));
+        keepAlive = true;
         if (it != headers.end_iterator()) {
             HashMap<SString, SString> map = keepAliveParser->parse(it->get_val());
             // timeout
             auto timeout_it = map.find(TimeOutStr);
             if (timeout_it != map.end_iterator()) {
-                keepAlive = true;
                 keepAliveTimeOut = timeout_it->get_val().toDecUnsigned();
+            } else {
+                keepAliveTimeOut = keepAliveDefaultSeconds;
             }
             // max
             auto max_it = map.find(MaxStr);
             if (max_it != map.end_iterator()) {
                 keepAliveMax = max_it->get_val().toDecSigned();
             }
+        } else {
+            keepAliveTimeOut = keepAliveDefaultSeconds;
         }
     }
 }

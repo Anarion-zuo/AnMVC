@@ -11,11 +11,6 @@ using namespace anarion;
 void anarion::HttpDispatcher::process() {
     // obtain channel
     TcpSocketChannel *tcpChannel = listener->pollQueue();
-//    HttpChannel *httpChannel;
-//    httpChannel = new HttpChannel(move(*tcpChannel));
-//    tcpChannel->invalidi();
-//    tcpChannel->invalido();
-//    delete tcpChannel;
 
     // read and parse data
     Buffer channelData = tcpChannel->out();
@@ -40,6 +35,9 @@ void anarion::HttpDispatcher::process() {
 
     // run applet process
     HttpApplet *instance = applet->getInstance();
+    if (instance == nullptr) {
+
+    }
     instance->setRequest(*request);
     instance->process();
 
@@ -96,6 +94,10 @@ void HttpDispatcher::returnHttpConnection(TcpSocketChannel *tcpChannel, Request 
 void HttpDispatcher::cleanUpSession(Response *response, HttpApplet *applet) {
     delete response;
     applet->release();
+}
+
+void HttpDispatcher::throwErrorStatus(int status, TcpSocketChannel &tcpChannel) {
+
 }
 
 inline static bool rightMinusLeftLargerThanDiff(time_t &left, time_t &right, size_type diff) {
