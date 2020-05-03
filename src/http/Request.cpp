@@ -13,16 +13,21 @@ namespace anarion {
         return length;
     }
 
-    struct HttpRequestTextSyntaxError : public std::exception {
-        const char *text;
-        size_type length;
-
-//        HttpRequestTextSyntaxError(const char *text, size_type length) : text(text), length(length) {}
-
-        const char *what() const noexcept override {
-            return "Failed to parse incoming HTTP request.";
+    static constexpr size_type skipChar(const char *expr, size_type length, char c) {
+        for (size_type i = 0; i < length; ++i) {
+            if (expr[i] != c) { return i; }
         }
-    };
+        return length;
+    }
+
+    static constexpr size_type skipCharBack(const char *expr, size_type length, char c) {
+        for (size_type i = 0; i < length; ++i) {
+            if (expr[length - i] != c) { return i; }
+        }
+        return length;
+    }
+
+
 
     static ListParser *spaceSeparatedParser = new ListParser(' ');
     static MapParser *paramMapParser = new MapParser('=', '&');
@@ -30,82 +35,142 @@ namespace anarion {
     /*
      * Parse the literal part of the request
      */
+#define throw_parse_error { delete request; throw HttpRequestTextSyntaxError(); }
+#define move_offsets(lineLength, offset) {\
+    \
+}
+
     Request *parseRequest(char *data, size_type length, size_type *totalHeaderLength) {
         if (data == nullptr || length == 0) {
             return nullptr;
         }
         Request *request = new Request;
 
-        size_type leftIndex = 0, rOffset;
+        size_type leftIndex = 0, spaceOffset, unParsedLength = length;
 
         /*
-         * First line of the request frame
-         * GET /hello HTTP/1.1
+         * Parse the first line
          */
-        rOffset = indexOf(data, length, '\r');
-        if (rOffset == length) {
-            throw HttpRequestTextSyntaxError();
-        }
-        if (data[rOffset + 1] != '\n') {
-            throw HttpRequestTextSyntaxError();
-        }
-        LinkedList<SString> firstLineVars = spaceSeparatedParser->parse(data, rOffset);
-        if (firstLineVars.size() != 3) {
-            throw HttpRequestTextSyntaxError();
-        }
-        auto firstLineIt = firstLineVars.begin_iterator();
-        request->method = Request::string2type(*firstLineIt);
-        ++firstLineIt;
-        SString dirparam = move(*firstLineIt);
-//        request->dir = move(*firstLineIt);
-        ++firstLineIt;
-        // http version
+        size_type firstLineOffset = indexOf(data, length, '\r');
+        // obvious error at the end of the line
+        if (firstLineOffset == length) throw_parse_error
+        if (data[firstLineOffset + 1] != '\n') throw_parse_error
+        size_type unParsedFirstLine = firstLineOffset;
+        // request method
+        size_type methodOffset = indexOf(data, firstLineOffset, ' ');
+        if (methodOffset == firstLineOffset) throw_parse_error
+        request->method = Request::string2type(data, methodOffset);
+        leftIndex += methodOffset;
+        unParsedFirstLine -= methodOffset;
+        spaceOffset = skipChar(data + leftIndex, unParsedFirstLine, ' ');
+        if (spaceOffset == unParsedFirstLine) throw_parse_error
+        leftIndex += spaceOffset;
+        unParsedFirstLine -= spaceOffset;
+        // directory & attrs
+        size_type dirOffset = indexOf(data + leftIndex, unParsedFirstLine, ' '), dirLeft = leftIndex;
+        if (dirOffset == unParsedFirstLine) throw_parse_error
+        leftIndex += dirOffset;
+        unParsedFirstLine -= dirOffset;
+        spaceOffset = skipChar(data + leftIndex, unParsedFirstLine, ' ');
+        if (spaceOffset == unParsedFirstLine) throw_parse_error
+        leftIndex += spaceOffset;
+        unParsedFirstLine -= spaceOffset;
+        // HTTP version
+        if (firstLineOffset - leftIndex != unParsedFirstLine) throw_parse_error
+
+        // dir & attr
+        size_type dirLength = indexOf(data + dirLeft, dirOffset, '?');
+        request->dir = SString::move(data + dirLeft, dirLength);
+        dirLeft += dirLength + 1;
+        dirOffset -= dirLength + 1;
+        request->params = paramMapParser->parse(data + dirLeft, dirOffset);
+
+        // prepare for the headers
+        leftIndex += firstLineOffset + 2;
+        unParsedLength -= firstLineOffset + 2;
 
         /*
-         * Request directory&params
+         * headers
          */
-        {
-            const char *dir_str = dirparam.getArr();
-            size_type dir_len = dirparam.length();
+        while (true) {
+            size_type lineLength = indexOf(data + leftIndex, unParsedLength, '\r');
+            if (lineLength == unParsedLength) throw_parse_error
+            if (data[leftIndex + lineLength + 1] != '\n') throw_parse_error
+        }
 
-            // find ?
-            size_type quOffset = indexOf(dir_str, dir_len, '?');
-            request->dir = SString(const_cast<char*>(dir_str), quOffset);
-            if (quOffset != dir_len) {
-                request->params = paramMapParser->parse(dir_str + quOffset + 1, quOffset + 1);
-            }
+        return request;
+    }
+
+# define request_buffer_length 4096
+
+    Request *parseFromChannel(SocketChannel &channel) {
+
+        Request *request = new Request;
+
+        char buffer[request_buffer_length];
+        size_type firstlineLength = channel.outUntil(buffer, request_buffer_length, '\r'), leftIndex = 0, spaceOffset;
+        char oneC;
+        channel.out(&oneC, 1);
+        if (oneC != '\n') throw_parse_error
+
+        /*
+         * First line
+         */
+        leftIndex = 0;
+        // request method
+        size_type methodOffset = indexOf(buffer, firstlineLength, ' ');
+        if (methodOffset == firstlineLength) throw_parse_error
+        request->method = Request::string2type(buffer, methodOffset);
+        leftIndex += methodOffset;
+        spaceOffset = skipChar(buffer + leftIndex, firstlineLength, ' ');
+        if (spaceOffset == firstlineLength) throw_parse_error
+        leftIndex += spaceOffset;
+        firstlineLength -= spaceOffset;
+        // dir params
+        size_type dirOffset = indexOf(buffer + leftIndex, firstlineLength, ' '), dirLeft = leftIndex;
+        if (dirOffset == firstlineLength) throw_parse_error
+        leftIndex += dirOffset;
+        firstlineLength -= dirOffset;
+        spaceOffset = skipChar(buffer + leftIndex, firstlineLength, ' ');
+        if (spaceOffset == firstlineLength) throw_parse_error
+        leftIndex += spaceOffset;
+        firstlineLength -= spaceOffset;
+        // HTTP version
+        // ...
+        // parse dir & param
+        size_type dirLength = indexOf(buffer + dirLeft, dirOffset, '?');
+        request->dir = SString(buffer + dirLeft, dirLength);
+        if (dirLength < dirOffset) {
+            dirLeft += dirLength + 1;
+            dirOffset -= dirLength + 1;
+            request->params = paramMapParser->parse(buffer + dirLeft, dirOffset);
         }
 
         /*
          * Headers
-         * 1) change all \n to space
-         * 2) apply map parser
          */
-        {
-            leftIndex = rOffset + 2;
-            size_type headersBeginIndex = leftIndex, headersEndIndex;
-            // change all \n to space
-            while (true) {
-                rOffset = indexOf(data + leftIndex, length - leftIndex, '\r') + leftIndex;
-                if (rOffset == length) {
-                    throw HttpRequestTextSyntaxError();
-                }
-                if (data[rOffset + 1] != '\n') {
-                    throw HttpRequestTextSyntaxError();
-                }
-                if (rOffset == leftIndex) {
-                    headersEndIndex = leftIndex - 2;  // the last non-empty \r
-                    leftIndex = rOffset + 2;
-                    break;
-                }
-                leftIndex = rOffset + 1;
-                data[leftIndex] = ' ';
-                ++leftIndex;
+        while (true) {
+            size_type lineLength = channel.outUntil(buffer, request_buffer_length, '\r');
+            channel.out(&oneC, 1);
+            if (oneC != '\n') throw_parse_error
+            if (lineLength == 0) {
+                break;
             }
-            request->headers = MapParser(':', '\r').parse(data + headersBeginIndex,
-                                                          headersEndIndex - headersBeginIndex);
+            leftIndex = 0;
+            size_type keyLength = indexOf(buffer, lineLength, ':');
+            if (keyLength == lineLength) throw_parse_error
+            SString key { buffer, keyLength };
+            leftIndex += keyLength + 1;
+            lineLength -= keyLength + 1;
+            spaceOffset = skipChar(buffer + leftIndex, lineLength, ' ');
+            if (spaceOffset == lineLength) {
+                request->headers.put(move(key), SString());
+            } else {
+                leftIndex += spaceOffset;
+                lineLength -= spaceOffset;
+                request->headers.put(move(key), SString(buffer + leftIndex, lineLength));
+            }
         }
-        *totalHeaderLength = leftIndex;
         return request;
     }
 }
@@ -127,6 +192,27 @@ anarion::Request * anarion::Request::parse(anarion::Buffer &data) {
             throw HttpRequestTextSyntaxError();
         }
         data.setWriteIndex(totalHeaderLength);
+    }
+    /*
+     * Connection
+     */
+    {
+        request->parseHeaderConnection();
+        request->parseHeaderKeepAlive();
+    }
+    return request;
+}
+
+anarion::Request *anarion::Request::parse(anarion::SocketChannel &channel) {
+    /*
+     * Literal part
+     */
+    Request *request = nullptr;
+    {
+        request = parseFromChannel(channel);
+        if (request == nullptr) {
+            throw HttpRequestTextSyntaxError();
+        }
     }
     /*
      * Connection
@@ -220,4 +306,5 @@ void anarion::Request::parseHeaderKeepAlive() {
         }
     }
 }
+
 

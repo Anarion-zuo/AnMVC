@@ -68,7 +68,7 @@ namespace anarion {
 
         virtual HttpApplet *getInstance() = 0;
         virtual void release() { delete this; }   // override please
-        void process();
+        virtual void process();
         constexpr Response *getResponse() const { return response; }
     };
 }

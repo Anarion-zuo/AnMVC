@@ -7,6 +7,8 @@
 
 #include <io/channel/file/Directory.h>
 #include "FilePayload.h"
+#include "LRUPayloadManager.h"
+#include <resource/FixedSizeCache.hpp>
 
 namespace anarion {
     class StaticResources {
@@ -22,8 +24,16 @@ namespace anarion {
 
         HashMap<SString, FilePayload*> dir2payload;
 
+        LRUPayloadManager *manager = new LRUPayloadManager(100);
+
+        void loadPayload(Payload *payload);
+
     public:
         explicit StaticResources(SString &&dir);
+
+        ~StaticResources() {
+            delete manager;
+        }
 
         FileChannel * getFile(const SString &relDir);
         Payload *getPayload(const SString &relDir);

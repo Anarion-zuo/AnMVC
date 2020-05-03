@@ -6,6 +6,8 @@ add_library(anarionmvc
         http/HttpDispatcher.cpp
         http/HttpChannel.cpp
         http/StaticHandler.cpp
+        http/Cookie.cpp
+        http/ErrorHandler.cpp
 
         listener/Listener.cpp
         listener/StreamListener.cpp
@@ -23,6 +25,10 @@ add_library(anarionmvc
         resource/CompressedPayload.cpp
         resource/StaticResources.cpp
         resource/TextPayload.cpp
+        resource/LRUPayloadManager.cpp
+        resource/JsonPayload.cpp
+
+        service/BackgroundService.cpp
 
         )
 

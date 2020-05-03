@@ -3,6 +3,7 @@
 //
 
 #include <http/HelloApplet.h>
+#include <http/ErrorHandler.h>
 #include "http/HttpDispatcher.h"
 
 using namespace anarion;
@@ -11,41 +12,65 @@ using namespace anarion;
 void anarion::HttpDispatcher::process() {
     // obtain channel
     TcpSocketChannel *tcpChannel = listener->pollQueue();
-
-    // read and parse data
-    Buffer channelData = tcpChannel->out();
-    if (channelData.empty()) {
-        // TODO connection closed
+    /*
+     * The parser operates directly on the connection
+     * To avoid unnecessary copying operations for huge payloads
+     */
+    // check if connection close
+    if (tcpChannel->checkClose()) {
         returnHttpConnection(tcpChannel, nullptr);
         // no cleanup required
         return;
     }
-    Request * request = Request::parse(channelData);
-//    tcpChannel->loadRequest(request);
+    Request *request = nullptr;
+    bool isBadRequest = false;
+    try {
+        request = Request::parse(*tcpChannel);
+    } catch (HttpRequestTextSyntaxError error) {
+        isBadRequest = true;
+    }
 
     // map to applet
     SString &requestDir = request->getDir();
-    HttpApplet *applet = getMappedApp(requestDir);
-    if (applet == nullptr) {
-        // try static applet
-        // if not working, return error
-        applet = staticHandler;
-        // no cleanup required
+    HttpApplet *applet;
+    if (isBadRequest) {
+        applet = ErrorHandler::getHandlerByStatusCode(400);
+    } else {
+        HttpApplet *mappedApplet = getMappedApp(requestDir);
+        if (mappedApplet == nullptr) {
+            // try static applet
+            applet = staticHandler->getInstance();
+        } else {
+            // get a new instance from the mapped model
+            applet = mappedApplet->getInstance();
+            if (applet == nullptr) {
+                // some unidentified error has occurred
+                applet = ErrorHandler::getHandlerByStatusCode(500);
+            }
+        }
     }
 
     // run applet process
-    HttpApplet *instance = applet->getInstance();
-    if (instance == nullptr) {
+    applet->setRequest(*request);
+    bool hasProcessError = false;
+    // keep trying until no error occurs
+    do {
+        try {
+            applet->process();
+            hasProcessError = false;
+        } catch (StaticResourceNotFound &resourceNotFoundError) {
+            applet = ErrorHandler::getHandlerByStatusCode(404);
+            applet->setRequest(*request);
+            hasProcessError = true;
+        }
+    } while (hasProcessError);
 
-    }
-    instance->setRequest(*request);
-    instance->process();
 
     // send back response
-    instance->getResponse()->send(*tcpChannel);
+    applet->getResponse()->send(*tcpChannel);
 
     returnHttpConnection(tcpChannel, request);
-    cleanUpSession(instance->getResponse(), instance);
+    cleanUpSession(applet->getResponse(), applet);
 }
 
 HttpApplet *HttpDispatcher::getMappedApp(const SString &dir) {
@@ -73,7 +98,7 @@ void HttpDispatcher::returnHttpConnection(TcpSocketChannel *tcpChannel, Request 
         fdMapLock.lock();
         auto it = fd2TimeOut.find(tcpChannel->getFd());
         if (it != fd2TimeOut.end_iterator()) {
-            fd2TimeOut.remove(*it);
+            fd2TimeOut.remove(it);
         }
         fdMapLock.unlock();
         // connection already closed

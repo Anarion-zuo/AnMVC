@@ -37,7 +37,12 @@ anarion::FileChannel * anarion::StaticResources::getFile(const anarion::SString 
     // images
     auto imageIt = imageFormatSet.find(suffix);
     if (imageIt != imageFormatSet.end_iterator()) {
-        FileEntry *entry = imgDirectory->findByDir(relDir);
+        FileEntry *entry;
+        if (imgDirectory) {
+            entry = imgDirectory->findByDir(relDir);
+        } else {
+            entry = directory.findByDir(relDir);
+        }
         if (entry) {
             if (entry->isFile()) {
                 return dynamic_cast<FileChannel *>(entry);
@@ -87,7 +92,9 @@ anarion::Directory *anarion::StaticResources::getChildDirectoryByName(const anar
 anarion::Payload *anarion::StaticResources::getPayload(const anarion::SString &relDir) {
     auto it = dir2payload.find(relDir);
     if (it != dir2payload.end_iterator()) {
-        return it->get_val();
+        Payload *ret = it->get_val();
+        loadPayload(ret);
+        return ret;
     }
     // update payload table
     FileEntry *entry = getFile(relDir);
@@ -96,7 +103,11 @@ anarion::Payload *anarion::StaticResources::getPayload(const anarion::SString &r
     }
     FilePayload *payload = new FilePayload(dynamic_cast<FileChannel*>(entry));
     payload->setContentTypeBySuffix(entry->getSuffix());
-    payload->load();
+    loadPayload(payload);
     dir2payload.put(relDir, payload);
     return payload;
+}
+
+void anarion::StaticResources::loadPayload(anarion::Payload *payload) {
+    manager->load(payload);
 }

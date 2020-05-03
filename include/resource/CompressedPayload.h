@@ -15,12 +15,16 @@ namespace anarion {
 
         static SString defaultContentEncoding;
 
+        void unload_impl();
+
     public:
 
-        CompressedPayload(FileChannel *fileChannel);
+        explicit CompressedPayload(FileChannel *fileChannel);
+        ~CompressedPayload() override { unload_impl(); }
 
         size_type length();
         void load() override;
+        void unload() override { unload_impl(); }
         bool isLoaded() override;
         void send(SocketChannel &channel) override;
 

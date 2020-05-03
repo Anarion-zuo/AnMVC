@@ -17,6 +17,7 @@ namespace anarion {
         virtual void send(SocketChannel &channel) = 0;
         virtual size_type length() = 0;
         virtual void load() = 0;
+        virtual void unload() = 0;
         virtual bool isLoaded() = 0;
         virtual const SString & getContentType() = 0;
         virtual const SString & getContentEncoding() = 0;

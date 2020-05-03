@@ -70,3 +70,10 @@ void anarion::FilePayload::setContentTypeBySuffix(const anarion::SString &suffix
     contentType = it->get_val();
 }
 
+void anarion::FilePayload::unload_impl() {
+    operator delete (fileCache, fileLength);
+    fileCache = nullptr;
+    fileLength = 0;
+    lastLoadTime = {0, 0};
+}
+

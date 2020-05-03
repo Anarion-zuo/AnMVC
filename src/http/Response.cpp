@@ -3,6 +3,7 @@
 //
 
 #include "http/Response.h"
+#include <container/SString.h>
 
 anarion::HashMap<int, anarion::SString> anarion::Response::status2desc (
         {
@@ -104,6 +105,8 @@ void anarion::Response::send(anarion::SocketChannel &channel) {
         }
     }
     // setup header attributes
+    addStatus();
+    addServerSigniture();
     addContentType();
     addContentLength();
     addContentEncoding();
@@ -186,4 +189,12 @@ void anarion::Response::addContentEncoding() {
             addHeader(SString("Content-Encoding"), SString(payload->getContentEncoding()));
         }
     }
+}
+
+void anarion::Response::addStatus() {
+    addHeader(SString("status"), SString::parseDec(status));
+}
+
+void anarion::Response::addServerSigniture() {
+    addHeader(SString("server"), SString("AnServer"));
 }

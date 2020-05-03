@@ -47,3 +47,13 @@ void anarion::CompressedPayload::send(anarion::SocketChannel &channel) {
     channel.in(compressedCache, compressedLength);
 }
 
+void anarion::CompressedPayload::unload_impl() {
+    FilePayload::unload_impl();  // unload parent fields
+    // unload this fields
+    operator delete (compressedCache, compressedSpaceLength);
+    compressedCache = nullptr;
+    compressedSpaceLength = 0;
+    compressedLength = 0;
+}
+
+

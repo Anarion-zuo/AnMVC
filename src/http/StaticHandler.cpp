@@ -9,8 +9,7 @@ void anarion::StaticHandler::onGet() {
     SString &dir = request->getDir();
     Payload *payload = staticResources.getPayload(dir);
     if (payload == nullptr) {
-        set400Page(404);
-        return;
+        throw StaticResourceNotFound();
     }
     response->setPayload(payload);
 }
@@ -19,4 +18,12 @@ anarion::StaticHandler::ItemPool<anarion::StaticHandler> anarion::StaticHandler:
 
 anarion::HttpApplet *anarion::StaticHandler::getInstance() {
     return pool.fetch();
+}
+
+void anarion::StaticHandler::release() {
+    pool.returnItem(this);
+}
+
+const char *anarion::StaticResourceNotFound::what() const noexcept {
+    return "Requested resource not found by server.";
 }

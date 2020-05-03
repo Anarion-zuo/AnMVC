@@ -19,6 +19,7 @@ namespace anarion {
     class Request {
         friend class HttpDispatcher;
         friend Request *parseRequest(char *data, size_type length, size_type *totalHeaderLength);
+        friend Request * parseFromChannel(SocketChannel &channel);
     protected:
 
         // basic attributes
@@ -82,6 +83,7 @@ namespace anarion {
         Request(Request &&rhs) noexcept : dir(move(rhs.dir)), headers(move(rhs.headers)), params(move(rhs.params)) {}
 
         static Request * parse(Buffer &data);
+        static Request *parse(SocketChannel &channel);
 
         SString &getHeaders(const SString &key) { return headers.get(key); }
         SString &getParams(const SString &key) { return params.get(key); }
@@ -101,6 +103,17 @@ namespace anarion {
             return keepAliveTimeOut;
         }
 
+    };
+
+    struct HttpRequestTextSyntaxError : public std::exception {
+        const char *text;
+        size_type length;
+
+//        HttpRequestTextSyntaxError(const char *text, size_type length) : text(text), length(length) {}
+
+        const char *what() const noexcept override {
+            return "Failed to parse incoming HTTP request.";
+        }
     };
 }
 

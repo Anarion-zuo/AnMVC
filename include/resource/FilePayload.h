@@ -24,15 +24,19 @@ namespace anarion {
 
         bool needUpdate();
 
+        void unload_impl();
+
     public:
 
         size_type length() override;
 
 //        explicit FilePayload(SString &&dir) : fileChannel(FileChannel::open(forward<SString>(dir))) {}
         explicit FilePayload(FileChannel *filechannel) : fileChannel(filechannel) {}
+        ~FilePayload() override { unload_impl(); }
 
         void load() override;
         bool isLoaded() override;
+        void unload() override { unload_impl(); }
 
         void send(SocketChannel &channel) override ;
 

@@ -37,6 +37,8 @@ namespace anarion {
         constexpr void setPayload(Payload *p) { payload = p; }
 
         void addHeader(SString &&key, SString &&val) { headers.put(forward<SString>(key), forward<SString>(val)); }
+        void addServerSigniture();
+        void addStatus();
         void addDate();
         void addContentLength();
         void addContentType();

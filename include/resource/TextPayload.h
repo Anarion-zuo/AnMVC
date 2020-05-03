@@ -24,6 +24,10 @@ namespace anarion {
         bool isLoaded() override;
         const SString &getContentType() override;
         void load() override {}
+        void unload() override {}
+
+        void setText(SString text) { this->text = move(text); }
+        const SString &getText() const { return text; }
     };
 
 

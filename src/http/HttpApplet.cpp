@@ -7,9 +7,6 @@
 anarion::StaticResources anarion::HttpApplet::staticResources(SString("/home/anarion/Documents/CppProjects/MyMVC/static"));
 
 void anarion::HttpApplet::process() {
-    if (request == nullptr) {
-        // TODO null request Exception
-    }
     // initialize response
     response = new Response();  // default status 200
     /*

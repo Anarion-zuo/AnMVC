@@ -12,8 +12,15 @@ namespace anarion {
         static ItemPool<StaticHandler> pool;
     protected:
         void onGet() override;
+
+    public:
         HttpApplet *getInstance() override;
+        void release() override;
     };
+
+struct StaticResourceNotFound : public std::exception {
+    const char *what() const noexcept override;
+};
 }
 
 #endif //MYMVC_STATICHANDLER_H
