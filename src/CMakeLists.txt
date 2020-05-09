@@ -12,6 +12,7 @@ add_library(anarionmvc
         listener/Listener.cpp
         listener/StreamListener.cpp
         listener/TcpPortListener.cpp
+        listener/TcpLoggerInfo.cpp
 
         testapp/HelloApplet.cpp
 
@@ -30,11 +31,14 @@ add_library(anarionmvc
 
         service/BackgroundService.cpp
 
+        logger/MvcLogger.cpp
+
         )
 
 add_library(anarionbase STATIC IMPORTED)
 set_target_properties(anarionbase PROPERTIES IMPORTED_LOCATION ../lib/libanarionbase.a)
 target_link_libraries(anarionmvc anarionbase pthread z)
 
-include_directories(../../MyCppBase/include)
+#include_directories(../../MyCppBase/include)
 include_directories(../include)
+include_directories(../include/base)

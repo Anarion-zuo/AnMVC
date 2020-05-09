@@ -145,7 +145,7 @@ void HttpDispatcher::CleanThread::run() {
         }
         _this->fd2TimeOut = newMap;
         _this->fdMapLock.unlock();
-        sleep(5);
+        Thread::sleep(Time(5));
     }
 }
 
