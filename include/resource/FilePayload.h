@@ -5,10 +5,10 @@
 #ifndef MYMVC_FILEPAYLOAD_H
 #define MYMVC_FILEPAYLOAD_H
 
-#include <io/channel/file/FileChannel.h>
 #include "Payload.h"
 
 namespace anarion {
+    class FileChannel;
     class FilePayload : public virtual Payload {
     protected:
 

@@ -5,7 +5,7 @@
 #include <resource/TextPayload.h>
 #include "http/StaticHandler.h"
 
-void anarion::StaticHandler::onGet() {
+void anarion::StaticHandler::onGet(Request *request, Response *response) {
     SString &dir = request->getDir();
     Payload *payload = staticResources.getPayload(dir);
     if (payload == nullptr) {
@@ -14,15 +14,6 @@ void anarion::StaticHandler::onGet() {
     response->setPayload(payload);
 }
 
-anarion::StaticHandler::ItemPool<anarion::StaticHandler> anarion::StaticHandler::pool;
-
-anarion::HttpApplet *anarion::StaticHandler::getInstance() {
-    return pool.fetch();
-}
-
-void anarion::StaticHandler::release() {
-    pool.returnItem(this);
-}
 
 const char *anarion::StaticResourceNotFound::what() const noexcept {
     return "Requested resource not found by server.";

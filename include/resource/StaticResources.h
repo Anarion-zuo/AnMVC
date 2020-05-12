@@ -37,6 +37,7 @@ namespace anarion {
 
         FileChannel * getFile(const SString &relDir);
         Payload *getPayload(const SString &relDir);
+
     };
 }
 

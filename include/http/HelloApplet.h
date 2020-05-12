@@ -12,14 +12,9 @@ namespace anarion {
 class HelloApplet : public virtual HttpApplet {
 protected:
 
-    static ItemPool<HelloApplet> pool;
-
-    void onGet() override;
+    void onGet(Request *request, Response *response) override;
 
 public:
-    HttpApplet *getInstance() override;
-
-    void release() override;
 };
 }
 

@@ -14,6 +14,18 @@
           </excludedPaths>
         </serverdata>
       </paths>
+      <paths name="Centos GCC (c9786444-f743-4321-9e65-8f0bed96da11)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/tmp/tmp.cpiCzZi0HM" local="$PROJECT_DIR$" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-release" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-centos-gcc" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
     </serverData>
   </component>
 </project>

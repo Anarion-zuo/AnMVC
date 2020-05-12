@@ -5,7 +5,17 @@
 #include "listener/TcpPortListener.h"
 #include <io/channel/network/TcpSocketChannel.h>
 #include <concurrent/base/Thread.h>
+#include <io/base/io-exceptions.h>
+#include <logger/MvcLogger.h>
 
+namespace anarion {
+    class TcpListenerLoggerInfo : public MvcLoggerInfo {
+    public:
+        SString serializeHostInfo(const HostInfo &info) {
+
+        }
+    };
+}
 static void addEvent(int epfd, int fd, int state) {
     epoll_event ev;
     memset(&ev, 0, sizeof(epoll_event));
@@ -38,10 +48,12 @@ void anarion::TcpPortListener::listen() {
     int ret, fd, lfd = server.getFd();
     // initiate listen
     server.listen(backlog);
+//    MvcLogger::getInstance().addInfo(new MvcLoggerInfo(SString("Epoll reactor initialized.")));
     // roll
     while (true) {
         ret = epoll_wait(epfd, events, backlog, 0);   // non block
         if (ret < 0) {
+//            getLogger().addInfo(new MvcLoggerInfo(SString("Epoll wait failed. Forced to quit.")));
             perror("sth wrong:");
             exit(1);
         }
@@ -49,7 +61,8 @@ void anarion::TcpPortListener::listen() {
         for (int index = 0; index < ret; ++index) {
             fd = events[index].data.fd;
             if ((events[index].events & EPOLLERR)) {
-                // TODO listener exception
+//                getLogger().addInfo(new MvcLoggerInfo(SString("Epoll event contains an error.")));
+//                throw ListenException();
             }
             if ((events[index].events & EPOLLIN) == 0) {
                 continue;
@@ -60,8 +73,10 @@ void anarion::TcpPortListener::listen() {
                 socklen_t addrlen = sizeof(sockaddr_in);
                 int cfd = ::accept(lfd, reinterpret_cast<sockaddr *>(&client_addr), &addrlen);
                 if (cfd == -1) {
-
+                    throw AcceptException();
                 }
+                HostInfo info(client_addr);
+//                getLogger().addInfo();
                 addEvent(epfd, cfd, EPOLLIN | EPOLLET);
                 continue;
             }

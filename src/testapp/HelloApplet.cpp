@@ -7,20 +7,8 @@
 #include <resource/CompressedPayload.h>
 #include "http/HelloApplet.h"
 
-
-anarion::HelloApplet::ItemPool<anarion::HelloApplet> anarion::HelloApplet::pool;
-
-anarion::HttpApplet *anarion::HelloApplet::getInstance() {
-    return pool.fetch();
-}
-
-void anarion::HelloApplet::onGet() {
-    Payload *payload = staticResources.getPayload(SString("hello.html"));
+void anarion::HelloApplet::onGet(Request *request, Response *response) {
+    Payload *payload = staticResources.getPayload(SString("index.html"));
     response->setPayload(payload);
 }
 
-void anarion::HelloApplet::release() {
-    request = nullptr;
-    response = nullptr;
-    pool.returnItem(this);
-}

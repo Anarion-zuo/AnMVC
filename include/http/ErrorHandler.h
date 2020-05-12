@@ -8,7 +8,7 @@
 #include "HttpApplet.h"
 
 namespace anarion {
-    class ErrorHandler : virtual public HttpApplet {
+    class ErrorHandler : public HttpApplet {
     protected:
         int code;
         ErrorHandler(int code, Payload *payload) : code(code), payload(payload) {}
@@ -17,18 +17,18 @@ namespace anarion {
 
         Mutex processLock;
 
-        void onAll();
+        void onAll(Request *request, Response *response);
 
-        void onGet() override;
-        void onPost() override;
-        void onDelete() override;
-        void onPut() override;
-        void onHead() override;
-        void onConnect() override;
-        void onOptions() override;
-        void onTrace() override;
-        void onPatch() override;
-        void onUnknown() override;
+        void onGet(Request *request, Response *response) override;
+        void onPost(Request *request, Response *response) override;
+        void onDelete(Request *request, Response *response) override;
+        void onPut(Request *request, Response *response) override;
+        void onHead(Request *request, Response *response) override;
+        void onConnect(Request *request, Response *response) override;
+        void onOptions(Request *request, Response *response) override;
+        void onTrace(Request *request, Response *response) override;
+        void onPatch(Request *request, Response *response) override;
+        void onUnknown(Request *request, Response *response) override;
 
         static HashMap<int, ErrorHandler*> code2handler;
         static void initCode2HandlerMap();
@@ -36,11 +36,8 @@ namespace anarion {
     public:
         static ErrorHandler *getHandlerByStatusCode(int code);
 
-        void release() override;
+        void process(Request *request, Response *response) override;
 
-        void process() override;
-
-        HttpApplet *getInstance() override;
     };
 }
 

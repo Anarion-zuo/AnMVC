@@ -3,6 +3,7 @@
 //
 
 #include "resource/StaticResources.h"
+#include <io/channel/file/FileChannel.h>
 
 anarion::SString anarion::StaticResources::htmlString("html"), anarion::StaticResources::cssString("css"), anarion::StaticResources::jsString("js"), anarion::StaticResources::imgString("img");
 

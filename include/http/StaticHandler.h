@@ -9,13 +9,10 @@
 
 namespace anarion {
     class StaticHandler : public HttpApplet {
-        static ItemPool<StaticHandler> pool;
     protected:
-        void onGet() override;
+        void onGet(Request *request, Response *response) override;
 
     public:
-        HttpApplet *getInstance() override;
-        void release() override;
     };
 
 struct StaticResourceNotFound : public std::exception {

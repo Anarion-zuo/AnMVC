@@ -4,14 +4,23 @@
 
 #include <http/HelloApplet.h>
 #include <http/ErrorHandler.h>
+#include <logger/MvcLogger.h>
 #include "http/HttpDispatcher.h"
 
 using namespace anarion;
 
+namespace anarion {
+    class DispatcherInfo : public MvcLoggerInfo {
+    protected:
+        SString message;
+
+    };
+}
 
 void anarion::HttpDispatcher::process() {
     // obtain channel
     TcpSocketChannel *tcpChannel = listener->pollQueue();
+    Response *response = new Response;
     /*
      * The parser operates directly on the connection
      * To avoid unnecessary copying operations for huge payloads
@@ -39,38 +48,32 @@ void anarion::HttpDispatcher::process() {
         HttpApplet *mappedApplet = getMappedApp(requestDir);
         if (mappedApplet == nullptr) {
             // try static applet
-            applet = staticHandler->getInstance();
+            applet = staticHandler;
         } else {
             // get a new instance from the mapped model
-            applet = mappedApplet->getInstance();
-            if (applet == nullptr) {
-                // some unidentified error has occurred
-                applet = ErrorHandler::getHandlerByStatusCode(500);
-            }
+            applet = mappedApplet;
         }
     }
 
     // run applet process
-    applet->setRequest(*request);
     bool hasProcessError = false;
     // keep trying until no error occurs
     do {
         try {
-            applet->process();
+            applet->process(request, response);
             hasProcessError = false;
         } catch (StaticResourceNotFound &resourceNotFoundError) {
             applet = ErrorHandler::getHandlerByStatusCode(404);
-            applet->setRequest(*request);
             hasProcessError = true;
         }
     } while (hasProcessError);
 
 
     // send back response
-    applet->getResponse()->send(*tcpChannel);
+    response->send(*tcpChannel);
 
     returnHttpConnection(tcpChannel, request);
-    cleanUpSession(applet->getResponse(), applet);
+    cleanUpSession(response, applet);
 }
 
 HttpApplet *HttpDispatcher::getMappedApp(const SString &dir) {
@@ -82,7 +85,7 @@ HttpApplet *HttpDispatcher::getMappedApp(const SString &dir) {
 }
 
 void HttpDispatcher::registerApplets() {
-    requestMap.put(SString("/"), new HelloApplet());
+//    requestMap.put(SString("/"), new HelloApplet());
 }
 
 void HttpDispatcher::returnHttpConnection(TcpSocketChannel *tcpChannel, Request *request) {
@@ -118,11 +121,14 @@ void HttpDispatcher::returnHttpConnection(TcpSocketChannel *tcpChannel, Request 
 
 void HttpDispatcher::cleanUpSession(Response *response, HttpApplet *applet) {
     delete response;
-    applet->release();
 }
 
 void HttpDispatcher::throwErrorStatus(int status, TcpSocketChannel &tcpChannel) {
 
+}
+
+void HttpDispatcher::addMapping(SString &&dir, HttpApplet *applet) {
+    requestMap.put(forward<SString>(dir), applet);
 }
 
 inline static bool rightMinusLeftLargerThanDiff(time_t &left, time_t &right, size_type diff) {
@@ -138,7 +144,7 @@ void HttpDispatcher::CleanThread::run() {
             time_t now = time(nullptr);
             if (rightMinusLeftLargerThanDiff(it->get_val().createdTime, now, it->get_val().timeOut)) {
                 TcpSocketChannel tcpChannel(it->get_key());
-                _this->listener->closeChannel(&tcpChannel);
+//                _this->listener->closeChannel(&tcpChannel);
             } else {
                 newMap.insert(move(*it));
             }

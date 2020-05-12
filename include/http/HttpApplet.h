@@ -15,43 +15,19 @@ namespace anarion {
     class HttpApplet {
     protected:
 
-        template <class ItemType>
-        class ItemPool {
-        private:
-            BlockQueue<ItemType*> appQueue;
-        public:
-            ItemPool() {
-                appQueue.push(new ItemType);
-            }
-
-            ItemType *fetch() {
-                if (appQueue.empty()) {
-                    return new ItemType;
-                }
-                return appQueue.pop();
-            }
-
-            void returnItem(ItemType *app) {
-                appQueue.push(app);
-            }
-        };
-
-        Request *request = nullptr;
-        Response *response = nullptr;
-
         /*
          * request handling interface
          */
-        virtual void onGet() {};
-        virtual void onPost() {};
-        virtual void onDelete() {};
-        virtual void onPut() {};
-        virtual void onHead() {};
-        virtual void onConnect() {};
-        virtual void onOptions() {};
-        virtual void onTrace() {};
-        virtual void onPatch() {};
-        virtual void onUnknown() {};
+        virtual void onGet(Request *request, Response *response) {}
+        virtual void onPost(Request *request, Response *response) {}
+        virtual void onDelete(Request *request, Response *response) {}
+        virtual void onPut(Request *request, Response *response) {}
+        virtual void onHead(Request *request, Response *response) {}
+        virtual void onConnect(Request *request, Response *response) {}
+        virtual void onOptions(Request *request, Response *response) {}
+        virtual void onTrace(Request *request, Response *response) {}
+        virtual void onPatch(Request *request, Response *response) {}
+        virtual void onUnknown(Request *request, Response *response) {}
 
         static StaticResources staticResources;
 
@@ -61,15 +37,10 @@ namespace anarion {
 
     public:
 
-        HttpApplet() {}
-        virtual ~HttpApplet() {}
+        HttpApplet() = default;
+        virtual ~HttpApplet() = default;
 
-        constexpr void setRequest(Request &in_request) { this->request = &in_request; }
-
-        virtual HttpApplet *getInstance() = 0;
-        virtual void release() { delete this; }   // override please
-        virtual void process();
-        constexpr Response *getResponse() const { return response; }
+        virtual void process(Request *request, Response *response);
     };
 }
 

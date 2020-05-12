@@ -6,42 +6,42 @@
 
 anarion::StaticResources anarion::HttpApplet::staticResources(SString("/home/anarion/Documents/CppProjects/MyMVC/static"));
 
-void anarion::HttpApplet::process() {
+void anarion::HttpApplet::process(Request *request, Response *response) {
     // initialize response
-    response = new Response();  // default status 200
     /*
      * switch Request type
      */
     switch (request->getMethod()) {
         case REQUEST_GET:
-            onGet();
+            onGet(request, response);
             break;
         case REQUEST_POST:
-            onPost();
+            onPost(request, response);
             break;
         case REQUEST_PUT:
-            onPut();
+            onPut(request, response);
             break;
         case REQUEST_DELETE:
-            onDelete();
+            onDelete(request, response);
             break;
         case REQUEST_HEAD:
-            onHead();
+            onHead(request, response);
             break;
         case REQUEST_CONNECT:
-            onConnect();
+            onConnect(request, response);
             break;
         case REQUEST_OPTIONS:
-            onOptions();
+            onOptions(request, response);
             break;
         case REQUEST_TRACE:
-            onTrace();
+            onTrace(request, response);
             break;
         case REQUEST_PATCH:
-            onPatch();
+            onPatch(request, response);
             break;
         default:
             // TODO unsupported request method
+            onUnknown(request, response);
             break;
     }
 
@@ -50,8 +50,3 @@ void anarion::HttpApplet::process() {
 
 anarion::TextPayload anarion::HttpApplet::page400Text(SString("Resource not found"));
 
-void anarion::HttpApplet::set400Page(int status) {
-    response->setStatus(status);
-//    staticResources.getPayload(SString("40x.html"));
-    response->setPayload(&page400Text);
-}

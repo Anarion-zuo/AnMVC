@@ -3,6 +3,7 @@
 //
 
 #include "resource/FilePayload.h"
+#include <io/channel/file/FileChannel.h>
 
 anarion::SString anarion::FilePayload::defaultContentType("text/plain"), anarion::FilePayload::defaultContentEncoding;
 

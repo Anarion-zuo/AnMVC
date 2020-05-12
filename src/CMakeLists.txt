@@ -33,6 +33,8 @@ add_library(anarionmvc
 
         logger/MvcLogger.cpp
 
+        controller/Controller.cpp
+
         )
 
 add_library(anarionbase STATIC IMPORTED)

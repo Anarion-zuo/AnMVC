@@ -4,48 +4,48 @@
 
 #include "http/ErrorHandler.h"
 
-void anarion::ErrorHandler::onAll() {
+void anarion::ErrorHandler::onAll(Request *request, Response *response) {
     response->setPayload(payload);
 }
 
-void anarion::ErrorHandler::onGet() {
-    onAll();
+void anarion::ErrorHandler::onGet(Request *request, Response *response) {
+    onAll(request, response);
 }
 
-void anarion::ErrorHandler::onPost() {
-    onAll();
+void anarion::ErrorHandler::onPost(Request *request, Response *response) {
+    onAll(request, response);
 }
 
-void anarion::ErrorHandler::onDelete() {
-    onAll();
+void anarion::ErrorHandler::onDelete(Request *request, Response *response) {
+    onAll(request, response);
 }
 
-void anarion::ErrorHandler::onPut() {
-    onAll();
+void anarion::ErrorHandler::onPut(Request *request, Response *response) {
+    onAll(request, response);
 }
 
-void anarion::ErrorHandler::onHead() {
-    onAll();
+void anarion::ErrorHandler::onHead(Request *request, Response *response) {
+    onAll(request, response);
 }
 
-void anarion::ErrorHandler::onConnect() {
-    onAll();
+void anarion::ErrorHandler::onConnect(Request *request, Response *response) {
+    onAll(request, response);
 }
 
-void anarion::ErrorHandler::onOptions() {
-    onAll();
+void anarion::ErrorHandler::onOptions(Request *request, Response *response) {
+    onAll(request, response);
 }
 
-void anarion::ErrorHandler::onTrace() {
-    onAll();
+void anarion::ErrorHandler::onTrace(Request *request, Response *response) {
+    onAll(request, response);
 }
 
-void anarion::ErrorHandler::onPatch() {
-    onAll();
+void anarion::ErrorHandler::onPatch(Request *request, Response *response) {
+    onAll(request, response);
 }
 
-void anarion::ErrorHandler::onUnknown() {
-    onAll();
+void anarion::ErrorHandler::onUnknown(Request *request, Response *response) {
+    onAll(request, response);
 }
 
 anarion::HashMap<int, anarion::ErrorHandler*> anarion::ErrorHandler::code2handler;
@@ -73,16 +73,8 @@ void anarion::ErrorHandler::initCode2HandlerMap() {
     map.put(404, new ErrorHandler(404, new TextPayload(SString("404 Resource not found"))));
 }
 
-anarion::HttpApplet *anarion::ErrorHandler::getInstance() {
-    return nullptr;
-}
-
-void anarion::ErrorHandler::release() {
-
-}
-
-void anarion::ErrorHandler::process() {
+void anarion::ErrorHandler::process(Request *request, Response *response) {
     processLock.lock();
-    HttpApplet::process();
+    HttpApplet::process(request, response);
     processLock.unlock();
 }
