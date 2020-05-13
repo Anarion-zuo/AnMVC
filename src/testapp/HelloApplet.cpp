@@ -3,12 +3,11 @@
 //
 
 #include <resource/FilePayload.h>
-#include <resource/HtmlPayload.h>
-#include <resource/CompressedPayload.h>
+#include <http/HttpContext.h>
 #include "http/HelloApplet.h"
 
 void anarion::HelloApplet::onGet(Request *request, Response *response) {
-    Payload *payload = staticResources.getPayload(SString("index.html"));
+    Payload *payload = HttpContext::instance().getStaticResources().getPayload(SString("index.html"));
     response->setPayload(payload);
 }
 

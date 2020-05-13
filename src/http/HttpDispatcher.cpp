@@ -35,7 +35,7 @@ void anarion::HttpDispatcher::process() {
     bool isBadRequest = false;
     try {
         request = Request::parse(*tcpChannel);
-    } catch (HttpRequestTextSyntaxError error) {
+    } catch (HttpRequestTextSyntaxError &error) {
         isBadRequest = true;
     }
 
@@ -50,7 +50,7 @@ void anarion::HttpDispatcher::process() {
             // try static applet
             applet = staticHandler;
         } else {
-            // get a new instance from the mapped model
+            // instance a new instance from the mapped model
             applet = mappedApplet;
         }
     }

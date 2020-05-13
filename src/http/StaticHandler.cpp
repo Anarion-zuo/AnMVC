@@ -3,11 +3,12 @@
 //
 
 #include <resource/TextPayload.h>
+#include <http/HttpContext.h>
 #include "http/StaticHandler.h"
 
 void anarion::StaticHandler::onGet(Request *request, Response *response) {
     SString &dir = request->getDir();
-    Payload *payload = staticResources.getPayload(dir);
+    Payload *payload = HttpContext::instance().getStaticResources().getPayload(dir);
     if (payload == nullptr) {
         throw StaticResourceNotFound();
     }

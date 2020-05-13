@@ -31,10 +31,6 @@ namespace anarion {
 
         static StaticResources staticResources;
 
-        // error pages
-        static TextPayload page400Text;
-        void set400Page(int status);
-
     public:
 
         HttpApplet() = default;

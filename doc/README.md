@@ -100,7 +100,7 @@ If everything is fine, you may find an executable file `MyMVC` under the `build`
 
 ### Run You Server
 
-Run the executable file, setting up an HTTP server on port 9898. You may request the page with *Postman* or some Web Browser. The page is a modest one, holding few code for testing only. The `html` file is `/static/html/hello.html`. You may edit it to get a different result. 
+Run the executable file, setting up an HTTP server on port 9898. You may request the page with *Postman* or some Web Browser. The page is a modest one, holding few code for testing only. The `html` file is `/static/html/hello.html`. You may edit it to instance a different result. 
 
 It should show this as default:
 
@@ -110,7 +110,7 @@ It should show this as default:
 
 <h1 style="color: blue">I am your FATHER</h1>
 
-If you fail to get the result, feel free to raise an issue.
+If you fail to instance the result, feel free to raise an issue.
 
 ## Build a Web Application
 

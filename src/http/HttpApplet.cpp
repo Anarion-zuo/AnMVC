@@ -4,7 +4,6 @@
 
 #include "http/HttpApplet.h"
 
-anarion::StaticResources anarion::HttpApplet::staticResources(SString("/home/anarion/Documents/CppProjects/MyMVC/static"));
 
 void anarion::HttpApplet::process(Request *request, Response *response) {
     // initialize response

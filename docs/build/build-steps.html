@@ -218,7 +218,7 @@
 <pre><code class="lang-cpp"><span class="hljs-keyword">void</span> HttpDispatcher::registerApplets() {
     <span class="hljs-comment">/*
     A request with directory &quot;/&quot;
-    should be handled by an instance of HelloApplet
+    should be handled by an pInstance of HelloApplet
     */</span>
     requestMap.put(SString(<span class="hljs-string">&quot;/&quot;</span>), <span class="hljs-keyword">new</span> HelloApplet());
 }

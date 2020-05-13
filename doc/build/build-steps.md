@@ -20,7 +20,7 @@ An `applet` must be appointed a way of access, a request pattern, which maps and
 void HttpDispatcher::registerApplets() {
     /*
     A request with directory "/"
-    should be handled by an instance of HelloApplet
+    should be handled by an pInstance of HelloApplet
     */
     requestMap.put(SString("/"), new HelloApplet());
 }

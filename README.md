@@ -98,7 +98,7 @@ If everything is fine, you may find an executable file `MyMVC` under the `build`
 
 ### Run You Server
 
-Run the executable file, setting up an HTTP server on port 9898. You may request the page with *Postman* or some Web Browser. The page is a modest one, holding few code for testing only. The `html` file is `/static/html/hello.html`. You may edit it to get a different result. 
+Run the executable file, setting up an HTTP server on port 9898. You may request the page with *Postman* or some Web Browser. The page is a modest one, holding few code for testing only. The `html` file is `/static/html/hello.html`. You may edit it to instance a different result. 
 
 It should show this as default:
 

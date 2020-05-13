@@ -1,0 +1,8 @@
+{
+  "mappings": [
+    {
+      "directory": "/",
+      "controller": "indexController"
+    }
+  ]
+}
