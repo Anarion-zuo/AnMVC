@@ -11,7 +11,6 @@ namespace anarion {
     class ErrorHandler : public HttpApplet {
     protected:
         int code;
-        ErrorHandler(int code, Payload *payload) : code(code), payload(payload) {}
 
         Payload *payload;
 
@@ -30,11 +29,8 @@ namespace anarion {
         void onPatch(Request *request, Response *response) override;
         void onUnknown(Request *request, Response *response) override;
 
-        static HashMap<int, ErrorHandler*> code2handler;
-        static void initCode2HandlerMap();
-        static Mutex mapLock;
     public:
-        static ErrorHandler *getHandlerByStatusCode(int code);
+        ErrorHandler(HttpContext *context, int code, Payload *payload) : HttpApplet(context), code(code), payload(payload) {}
 
         void process(Request *request, Response *response) override;
 

@@ -6,6 +6,7 @@
 #include <http/ErrorHandler.h>
 #include <logger/MvcLogger.h>
 #include "http/HttpDispatcher.h"
+#include <http/HttpContext.h>
 
 using namespace anarion;
 
@@ -43,12 +44,12 @@ void anarion::HttpDispatcher::process() {
     SString &requestDir = request->getDir();
     HttpApplet *applet;
     if (isBadRequest) {
-        applet = ErrorHandler::getHandlerByStatusCode(400);
+        applet = getContext().getErrorHandlerByCode(400);
     } else {
         HttpApplet *mappedApplet = getMappedApp(requestDir);
         if (mappedApplet == nullptr) {
             // try static applet
-            applet = staticHandler;
+            applet = &getContext().getStaticHandler();
         } else {
             // instance a new instance from the mapped model
             applet = mappedApplet;
@@ -63,7 +64,7 @@ void anarion::HttpDispatcher::process() {
             applet->process(request, response);
             hasProcessError = false;
         } catch (StaticResourceNotFound &resourceNotFoundError) {
-            applet = ErrorHandler::getHandlerByStatusCode(404);
+            applet = getContext().getErrorHandlerByCode(404);
             hasProcessError = true;
         }
     } while (hasProcessError);

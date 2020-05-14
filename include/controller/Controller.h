@@ -7,11 +7,11 @@
 
 #include <base/container/SString.h>
 #include <container/Map/HashMap.hpp>
+#include <http/HttpApplet.h>
 
 namespace anarion {
-    class Controller {
+    class Controller : public HttpApplet {
     protected:
-        static HashMap<SString, Controller*> nameMap;
     };
 }
 

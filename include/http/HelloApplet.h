@@ -11,10 +11,10 @@ namespace anarion {
     class CompressedPayload;
 class HelloApplet : public virtual HttpApplet {
 protected:
-
     void onGet(Request *request, Response *response) override;
 
 public:
+    explicit HelloApplet(HttpContext *context) : HttpApplet(context) {}
 };
 }
 

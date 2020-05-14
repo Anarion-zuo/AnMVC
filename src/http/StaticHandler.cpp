@@ -8,7 +8,7 @@
 
 void anarion::StaticHandler::onGet(Request *request, Response *response) {
     SString &dir = request->getDir();
-    Payload *payload = HttpContext::instance().getStaticResources().getPayload(dir);
+    Payload *payload = getContext().getStaticResources().getPayload(dir);
     if (payload == nullptr) {
         throw StaticResourceNotFound();
     }

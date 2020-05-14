@@ -14,11 +14,11 @@ namespace anarion {
     class StaticResources {
     protected:
 
-        static SString htmlString, cssString, jsString, imgString;
+//        static SString htmlString, cssString, jsString, imgString;
         static HashSet<SString> imageFormatSet;
 
         Directory directory;
-        Directory *htmlDirectory, *cssDirectory, *jsDirectory, *imgDirectory;
+//        Directory *htmlDirectory, *cssDirectory, *jsDirectory, *imgDirectory;
         HashMap<SString, Directory*> name2dir;
         Directory *getChildDirectoryByName(const SString &name);
 

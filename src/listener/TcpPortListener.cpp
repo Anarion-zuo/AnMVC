@@ -48,12 +48,10 @@ void anarion::TcpPortListener::listen() {
     int ret, fd, lfd = server.getFd();
     // initiate listen
     server.listen(backlog);
-//    MvcLogger::getInstance().addInfo(new MvcLoggerInfo(SString("Epoll reactor initialized.")));
     // roll
     while (true) {
         ret = epoll_wait(epfd, events, backlog, 0);   // non block
         if (ret < 0) {
-//            getLogger().addInfo(new MvcLoggerInfo(SString("Epoll wait failed. Forced to quit.")));
             perror("sth wrong:");
             exit(1);
         }

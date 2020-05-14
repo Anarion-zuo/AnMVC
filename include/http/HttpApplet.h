@@ -10,9 +10,10 @@
 #include <resource/TextPayload.h>
 #include "Request.h"
 #include "Response.h"
+#include "HttpComponent.h"
 
 namespace anarion {
-    class HttpApplet {
+    class HttpApplet : public HttpComponent {
     protected:
 
         /*
@@ -27,16 +28,18 @@ namespace anarion {
         virtual void onOptions(Request *request, Response *response) {}
         virtual void onTrace(Request *request, Response *response) {}
         virtual void onPatch(Request *request, Response *response) {}
-        virtual void onUnknown(Request *request, Response *response) {}
-
-        static StaticResources staticResources;
+        virtual void onUnknown(Request *request, Response *response);
 
     public:
 
-        HttpApplet() = default;
+        explicit HttpApplet(HttpContext *context) : HttpComponent(context) {}
         virtual ~HttpApplet() = default;
 
         virtual void process(Request *request, Response *response);
+    };
+
+    struct RequestMethodUnknown : public MvcException {
+        const char *what() const noexcept override;
     };
 }
 

@@ -13,6 +13,7 @@ namespace anarion {
         void onGet(Request *request, Response *response) override;
 
     public:
+        explicit StaticHandler(HttpContext *context) : HttpApplet(context) {}
     };
 
 struct StaticResourceNotFound : public std::exception {

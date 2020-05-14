@@ -5,7 +5,7 @@
 #include "resource/StaticResources.h"
 #include <io/channel/file/FileChannel.h>
 
-anarion::SString anarion::StaticResources::htmlString("html"), anarion::StaticResources::cssString("css"), anarion::StaticResources::jsString("js"), anarion::StaticResources::imgString("img");
+//anarion::SString anarion::StaticResources::htmlString("html"), anarion::StaticResources::cssString("css"), anarion::StaticResources::jsString("js"), anarion::StaticResources::imgString("img");
 
 anarion::HashSet<anarion::SString> anarion::StaticResources::imageFormatSet {
         SString("apng"), SString("bmp"), SString("gif"), SString("ico"), SString("cur"), SString("jpg"), SString("jpeg"), SString("jfif"), SString("pjpeg"), SString("pjp"), SString("png"), SString("svg"), SString("tiff"), SString("tif"), SString("webp")
@@ -14,28 +14,29 @@ anarion::HashSet<anarion::SString> anarion::StaticResources::imageFormatSet {
 anarion::StaticResources::StaticResources(anarion::SString &&dir) : directory(forward<SString>(dir)) {
     directory.open();
 
-    htmlDirectory = dynamic_cast<Directory *>(directory.getChild(htmlString));
-    if (htmlDirectory) {
-        name2dir.put(htmlString, htmlDirectory);
-    }
-    cssDirectory = dynamic_cast<Directory *>(directory.getChild(cssString));
-    if (cssDirectory) {
-        name2dir.put(cssString, cssDirectory);
-    }
-    jsDirectory = dynamic_cast<Directory *>(directory.getChild(jsString));
-    if (jsDirectory) {
-        name2dir.put(jsString, jsDirectory);
-    }
-    imgDirectory = dynamic_cast<Directory *>(directory.getChild(imgString));
-    if (imgDirectory) {
-        name2dir.put(imgString, imgDirectory);
-    }
+//    htmlDirectory = dynamic_cast<Directory *>(directory.getChild(htmlString));
+//    if (htmlDirectory) {
+//        name2dir.put(htmlString, htmlDirectory);
+//    }
+//    cssDirectory = dynamic_cast<Directory *>(directory.getChild(cssString));
+//    if (cssDirectory) {
+//        name2dir.put(cssString, cssDirectory);
+//    }
+//    jsDirectory = dynamic_cast<Directory *>(directory.getChild(jsString));
+//    if (jsDirectory) {
+//        name2dir.put(jsString, jsDirectory);
+//    }
+//    imgDirectory = dynamic_cast<Directory *>(directory.getChild(imgString));
+//    if (imgDirectory) {
+//        name2dir.put(imgString, imgDirectory);
+//    }
 }
 
 anarion::FileChannel * anarion::StaticResources::getFile(const anarion::SString &relDir) {
-    SString suffix = relDir.suffix('.');
+//    SString suffix = relDir.suffix('.');
 
     // images
+    /*
     auto imageIt = imageFormatSet.find(suffix);
     if (imageIt != imageFormatSet.end_iterator()) {
         FileEntry *entry;
@@ -50,8 +51,10 @@ anarion::FileChannel * anarion::StaticResources::getFile(const anarion::SString 
             }
         }
     }
+*/
 
     // others
+    /*
     Directory *childDirectory = getChildDirectoryByName(suffix);
     if (childDirectory) {
         FileEntry *entry = childDirectory->findByDir(relDir);
@@ -61,6 +64,7 @@ anarion::FileChannel * anarion::StaticResources::getFile(const anarion::SString 
             }
         }
     }
+     */
     FileEntry *entry = directory.findByDir(relDir);
     if (entry == nullptr) {
         return nullptr;

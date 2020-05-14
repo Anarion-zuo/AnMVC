@@ -39,13 +39,17 @@ void anarion::HttpApplet::process(Request *request, Response *response) {
             onPatch(request, response);
             break;
         default:
-            // TODO unsupported request method
             onUnknown(request, response);
-            break;
     }
 
 //    response->send()
 }
 
-anarion::TextPayload anarion::HttpApplet::page400Text(SString("Resource not found"));
+void anarion::HttpApplet::onUnknown(anarion::Request *request, anarion::Response *response) {
+    throw RequestMethodUnknown();
+}
 
+
+const char *anarion::RequestMethodUnknown::what() const noexcept {
+    return "Received unknown request method type";
+}

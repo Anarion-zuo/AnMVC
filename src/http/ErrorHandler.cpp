@@ -48,31 +48,6 @@ void anarion::ErrorHandler::onUnknown(Request *request, Response *response) {
     onAll(request, response);
 }
 
-anarion::HashMap<int, anarion::ErrorHandler*> anarion::ErrorHandler::code2handler;
-anarion::Mutex anarion::ErrorHandler::mapLock;
-
-anarion::ErrorHandler *anarion::ErrorHandler::getHandlerByStatusCode(int code) {
-    mapLock.lock();
-    if (code2handler.empty()) {
-        initCode2HandlerMap();
-    }
-    auto it = code2handler.find(code);
-    ErrorHandler *ret = nullptr;
-    if (it != code2handler.end_iterator()) {
-        ret = it->get_val();
-    }
-    mapLock.unlock();
-    return ret;
-}
-
-void anarion::ErrorHandler::initCode2HandlerMap() {
-    auto &map = code2handler;
-
-    map.put(503, new ErrorHandler(503, new TextPayload(SString("503 Service Unavailable"))));
-    map.put(400, new ErrorHandler(400, new TextPayload(SString("400 Bad Request"))));
-    map.put(404, new ErrorHandler(404, new TextPayload(SString("404 Resource not found"))));
-}
-
 void anarion::ErrorHandler::process(Request *request, Response *response) {
     processLock.lock();
     HttpApplet::process(request, response);

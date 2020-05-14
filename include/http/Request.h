@@ -105,7 +105,9 @@ namespace anarion {
 
     };
 
-    struct HttpRequestTextSyntaxError : public std::exception {
+    struct MvcException : public std::exception {};
+
+    struct HttpRequestTextSyntaxError : public MvcException {
         const char *text;
         size_type length;
 

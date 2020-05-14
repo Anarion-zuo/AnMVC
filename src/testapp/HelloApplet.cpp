@@ -7,7 +7,7 @@
 #include "http/HelloApplet.h"
 
 void anarion::HelloApplet::onGet(Request *request, Response *response) {
-    Payload *payload = HttpContext::instance().getStaticResources().getPayload(SString("index.html"));
+    Payload *payload = getContext().getStaticResources().getPayload(SString("index.html"));
     response->setPayload(payload);
 }
 

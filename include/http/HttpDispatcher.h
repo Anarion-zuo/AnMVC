@@ -11,6 +11,7 @@
 #include "HttpApplet.h"
 #include "HttpChannel.h"
 #include "StaticHandler.h"
+#include "HttpComponent.h"
 /*
  * The dispatcher collects connections (Channel) from specified listener (listener) and forwards them to registered HttpApplet instances.
  * The listener is pre-specified at construct time.
@@ -20,13 +21,11 @@
  */
 
 namespace anarion {
-    class HttpDispatcher {
+    class HttpDispatcher : public HttpComponent {
     protected:
         TcpPortListener *listener;
         HashMap<SString, HttpApplet*> requestMap;
 
-        // static resources
-        StaticHandler *staticHandler = new StaticHandler;
 
         HttpApplet *getMappedApp(const SString &dir);
         void registerApplets();
@@ -51,7 +50,7 @@ namespace anarion {
         Mutex fdMapLock;
 
     public:
-        explicit HttpDispatcher(TcpPortListener *listener1) : listener(listener1), fdMapLock() {
+        explicit HttpDispatcher(HttpContext *context, TcpPortListener *listener1) : HttpComponent(context), listener(listener1), fdMapLock() {
             registerApplets();
             connectionCleanThread._this = this;
             connectionCleanThread.start();
