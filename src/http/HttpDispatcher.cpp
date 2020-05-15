@@ -22,6 +22,7 @@ void anarion::HttpDispatcher::process() {
     // obtain channel
     TcpSocketChannel *tcpChannel = listener->pollQueue();
     Response *response = new Response;
+    HostInfo *info = listener->getHostInfoByFd(tcpChannel->getFd());
     /*
      * The parser operates directly on the connection
      * To avoid unnecessary copying operations for huge payloads
@@ -29,9 +30,19 @@ void anarion::HttpDispatcher::process() {
     // check if connection close
     if (tcpChannel->checkClose()) {
         returnHttpConnection(tcpChannel, nullptr);
+        listener->removeInfoMap(tcpChannel->getFd());
+        delete info;
         // no cleanup required
         return;
     }
+
+    MvcLoggerInfo *loggerInfo = new MvcLoggerInfo;
+    loggerInfo->append("Incoming connection from ip ");
+    loggerInfo->append(info->ip_str);
+    loggerInfo->append(":");
+    loggerInfo->append(SString::parseDec(info->portNum));
+    getContext().addLog(loggerInfo);
+
     Request *request = nullptr;
     bool isBadRequest = false;
     try {

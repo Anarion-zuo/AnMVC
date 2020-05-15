@@ -74,7 +74,7 @@ void anarion::TcpPortListener::listen() {
                     throw AcceptException();
                 }
                 HostInfo info(client_addr);
-//                getLogger().addInfo();
+                putInfoMap(fd, info);
                 addEvent(epfd, cfd, EPOLLIN | EPOLLET);
                 continue;
             }
@@ -102,4 +102,36 @@ void anarion::TcpPortListener::returnConnection(anarion::TcpSocketChannel *chann
 void anarion::TcpPortListener::closeChannel(TcpSocketChannel *channel) {
     delEvent(epfd, channel->getFd(), EPOLLIN);
     channel->close();
+}
+
+bool anarion::TcpPortListener::inInfoMap(int fd) {
+    bool flag = false;
+    infoMapLock.lock();
+    auto it = infoMap.find(fd);
+    if (it != infoMap.end_iterator()) { flag = true; }
+    infoMapLock.unlock();
+    return flag;
+}
+
+void anarion::TcpPortListener::removeInfoMap(int fd) {
+    infoMapLock.lock();
+    infoMap.remove(fd);
+    infoMapLock.unlock();
+}
+
+anarion::HostInfo * anarion::TcpPortListener::getHostInfoByFd(int fd) {
+    HostInfo *info = nullptr;
+    infoMapLock.lock();
+    auto it = infoMap.find(fd);
+    if (it != infoMap.end_iterator()) {
+        info = it->get_val();
+    }
+    infoMapLock.unlock();
+    return info;
+}
+
+void anarion::TcpPortListener::putInfoMap(int fd, const anarion::HostInfo &info) {
+    infoMapLock.lock();
+    infoMap.put(fd, new HostInfo(info));
+    infoMapLock.unlock();
 }

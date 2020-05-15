@@ -21,7 +21,7 @@ anarion::HttpContext::HttpContext(in_port_t portNum) :
     staticResources(new StaticResources(SString("/home/anarion/Documents/CppProjects/MyMVC/static"))),
     staticHandler(new StaticHandler(this)),
     router(new RequestRouter(this)),
-    logger(SString("/home/anarion/Documents/CppProjects/MyMVC/web/mvc.log"))
+    logger(SString("/home/anarion/Documents/CppProjects/MyMVC/web/mvc-log.txt"))
 {
     // update instance
     delete pInstance;

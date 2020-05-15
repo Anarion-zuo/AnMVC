@@ -57,6 +57,9 @@ namespace anarion {
         // error handling
         ErrorHandler *getErrorHandlerByCode(int code);
 
+        // logger
+        MvcLogger &getLogger() { return logger; }
+        void addLog(MvcLoggerInfo *info) { logger.addInfo(info); }
     };
 }
 

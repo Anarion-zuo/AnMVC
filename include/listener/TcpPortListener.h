@@ -34,6 +34,13 @@ namespace anarion {
 
         // ready queue
         BlockQueue<TcpSocketChannel*> readQueue;
+
+        // connection info
+        HashMap<int, HostInfo*> infoMap;
+        Mutex infoMapLock;
+
+        bool inInfoMap(int fd);
+        void putInfoMap(int fd, const HostInfo &info);
     public:
         explicit TcpPortListener(in_port_t portNum) : server(portNum), routine(nullptr) {
             routine.listener = this;
@@ -50,6 +57,10 @@ namespace anarion {
         void returnConnection(anarion::TcpSocketChannel *channel, Request *request);
 
         void closeChannel(TcpSocketChannel *channel);
+
+        // connection info
+        void removeInfoMap(int fd);
+        HostInfo * getHostInfoByFd(int fd);
     };
 }
 

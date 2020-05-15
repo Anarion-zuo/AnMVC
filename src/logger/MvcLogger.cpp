@@ -25,6 +25,7 @@ void anarion::MvcLoggerInfo::toChannel(anarion::InChannel &inChannel) {
     messageBuffer.rewind();
     inChannel.in(memberBuffer);
     inChannel.in(messageBuffer);
+    inChannel.in("\n", 1);
 }
 
 void anarion::MvcLoggerInfo::serialize() {
